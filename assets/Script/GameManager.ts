@@ -3,7 +3,7 @@ const { ccclass, property } = _decorator;
 
 import { ITEM } from './Item';
 import { ITEM_KIND } from './myConst';
-import { CHANCE_MAP } from './Chance';
+import { CHANCE } from './Chance';
 import { EXP } from './Exp';
 import { RESULT } from './Result';
 
@@ -18,67 +18,49 @@ const COLOR_LEVEL = {
 const CHANCE_RANGE = {
     [0]:{
         min:10001,
-        max:24,
+        max:8,
     },
     [1]:{
         min:10001,
-        max:24,
+        max:8,
     },
     [2]:{
         min:10001,
-        max:24,
+        max:8,
     },
     [3]:{
         min:10001,
-        max:24,
+        max:8,
     },
 
     [4]:{
         min:20001,
-        max:24,
+        max:8,
     },
     [5]:{
         min:20001,
-        max:24,
+        max:8,
     },
     [6]:{
         min:20001,
-        max:24,
+        max:8,
     },
 
     [7]:{
         min:30001,
-        max:24,
+        max:8,
     },
     [8]:{
         min:30001,
-        max:24,
+        max:8,
     },
     [9]:{
         min:30001,
-        max:24,
+        max:8,
     },
 }
 
-//任务 文本
-const TASK_TEXT = {
 
-    [1]:{ //对敌
-        [1]: "外出偶遇魔族修士(炼气初期), 是否铲奸除恶", //任务id
-        [2]: "外出偶遇魔族修士(炼气中期), 是否铲奸除恶",
-        [3]: "外出偶遇魔族修士(炼气后期), 是否铲奸除恶",
-        [4]: "",
-    },
-    [2]:{//探宝
-        [1]: "外出山林游历，偶遇一洞窟，洞中隐约现有宝光",
-        [2]: "山野深林，忽闻异兽吼叫，颇为瘆人，是否前去一观",
-        
-    },
-    [3]:{//传承
-        [1]: "神州惊现传承，是否前去",
-        
-    },
-}
 
 const COST_BIGUAN = {
     [0]: {
@@ -100,24 +82,208 @@ const COST_BIGUAN = {
 }
 
 const BASE_COST = {
-    [0]: 100,
-    [1]: 100,
-    [2]: 100,
-    [3]: 100,
+    [0]: 10,
 
-    [4]: 1000,
-    [5]: 1000,
-    [6]: 1000,
+    [1]: 20,
+    [2]: 20,
+    [3]: 20,
 
-    [7]: 10000,
-    [8]: 10000,
-    [9]: 10000,    
+    [4]: 50,
+    [5]: 50,
+    [6]: 50,
+
+    [7]: 100,
+    [8]: 100,
+    [9]: 100, 
+
+    [10]: 200,
+    [11]: 200,
+    [12]: 200, 
+
+    [13]: 500,
+    [14]: 500,
+    [15]: 500,
+
+    [16]: 1000,
+    [17]: 1000,
+    [18]: 1000,
+
+    [19]: 2000,
+    [20]: 2000,
+    [21]: 2000,
+
+    [22]: 5000,
+    [23]: 5000,
+    [24]: 5000,
+
+
 }
 
 const MIJING = {
     [1]: {
         cost:1,
-        dpsLevel:[0,1000,2000,3000],
+        dpsLevel:[0,2200,4300,10500],
+        reward:{
+            [1]:{
+                money: 100,
+                rate: [70,25,5,0]
+
+            },
+            [2]:{
+                money: 200,
+                rate: [50,30,15,5]
+            },
+            [3]:{
+                money: 500,
+                rate: [30,40,20,10]
+            },
+            [4]:{
+                money: 1000,
+                rate: [20,30,30,20]
+            },
+        }
+    },
+    [2]: {
+        cost:5,
+        dpsLevel:[0,5000,11500,22500],
+        reward:{
+            [1]:{
+                money: 100,
+                rate: [70,25,5,0]
+
+            },
+            [2]:{
+                money: 200,
+                rate: [50,30,15,5]
+            },
+            [3]:{
+                money: 500,
+                rate: [30,40,20,10]
+            },
+            [4]:{
+                money: 1000,
+                rate: [20,30,30,20]
+            },
+        }
+    },
+    [3]: {
+        cost:10,
+        dpsLevel:[0,20000,35000,65000],
+        reward:{
+            [1]:{
+                money: 100,
+                rate: [70,25,5,0]
+
+            },
+            [2]:{
+                money: 200,
+                rate: [50,30,15,5]
+            },
+            [3]:{
+                money: 500,
+                rate: [30,40,20,10]
+            },
+            [4]:{
+                money: 1000,
+                rate: [20,30,30,20]
+            },
+        }
+    },
+    [4]: {
+        cost:20,
+        dpsLevel:[0,50000,90000,170000],
+        reward:{
+            [1]:{
+                money: 100,
+                rate: [70,25,5,0]
+
+            },
+            [2]:{
+                money: 200,
+                rate: [50,30,15,5]
+            },
+            [3]:{
+                money: 500,
+                rate: [30,40,20,10]
+            },
+            [4]:{
+                money: 1000,
+                rate: [20,30,30,20]
+            },
+        }
+    },
+    [5]: {
+        cost:50,
+        dpsLevel:[0,90000,200000,350000],
+        reward:{
+            [1]:{
+                money: 100,
+                rate: [70,25,5,0]
+
+            },
+            [2]:{
+                money: 200,
+                rate: [50,30,15,5]
+            },
+            [3]:{
+                money: 500,
+                rate: [30,40,20,10]
+            },
+            [4]:{
+                money: 1000,
+                rate: [20,30,30,20]
+            },
+        }
+    },
+    [6]: {
+        cost:1,
+        dpsLevel:[0,300000,500000,900000],
+        reward:{
+            [1]:{
+                money: 100,
+                rate: [70,25,5,0]
+
+            },
+            [2]:{
+                money: 200,
+                rate: [50,30,15,5]
+            },
+            [3]:{
+                money: 500,
+                rate: [30,40,20,10]
+            },
+            [4]:{
+                money: 1000,
+                rate: [20,30,30,20]
+            },
+        }
+    },
+    [7]: {
+        cost:1,
+        dpsLevel:[0,1200000,1900000,3500000],
+        reward:{
+            [1]:{
+                money: 100,
+                rate: [70,25,5,0]
+
+            },
+            [2]:{
+                money: 200,
+                rate: [50,30,15,5]
+            },
+            [3]:{
+                money: 500,
+                rate: [30,40,20,10]
+            },
+            [4]:{
+                money: 1000,
+                rate: [20,30,30,20]
+            },
+        }
+    },
+    [8]: {
+        cost:1,
+        dpsLevel:[0,3400000,6000000,14000000],
         reward:{
             [1]:{
                 money: 100,
@@ -143,17 +309,17 @@ const MIJING = {
 const BOSS = {
     [1]: {
         cost:5,
-        dps:1000,
+        dps:20000,
         ticket:1,
     },
     [2]: {
         cost:5,
-        dps:10000,
+        dps:90000,
         ticket:2,
     },
     [3]: {
         cost:5,
-        dps:100000,
+        dps:500000,
         ticket:5,
     },
 }
@@ -258,6 +424,7 @@ export class GameManager extends Component {
         this.updateHealth(0)
         this.updateCostMoneyDlg()
         this.updateXiulianRateDlg()
+        this.updateBossDlg()
     }
 
     hideAllDlg(){
@@ -308,14 +475,17 @@ export class GameManager extends Component {
         
     }
     clickQiYu(){
-        console.info("click Qiyu")
         if (this.checkOpen()){
             return
         }
         let min = CHANCE_RANGE[this._level].min
         let max = CHANCE_RANGE[this._level].max
-        let idx = min + Math.floor(Math.random() * max)
-        this.showChance(idx)
+        let chanceList = []
+        for (let i = 0; i < max; i++){
+            chanceList[i] = CHANCE[min+i].weight
+        }
+        let idx = this.rewardRandom(chanceList)
+        this.showChance(min+idx)
         this.updateHealth(-1)//每次奇遇消耗一年寿命
     }
 
@@ -324,6 +494,15 @@ export class GameManager extends Component {
             return
         }
         this.openDlg(this.mijingDlg)
+        find("Canvas/AllDlg/MiJingDlg/Bg/Tips").active = false
+    }
+
+    clickMiJingTip(){
+       find("Canvas/AllDlg/MiJingDlg/Bg/Tips").active = true
+    }
+
+    closeMiJingTip(){
+        find("Canvas/AllDlg/MiJingDlg/Bg/Tips").active = false
     }
 
     clickBoss(){
@@ -331,6 +510,7 @@ export class GameManager extends Component {
             return
         }
         this.openDlg(this.bossDlg)
+       
     }
 
     clickLottery(){
@@ -338,8 +518,8 @@ export class GameManager extends Component {
             return
         }
         this.openDlg(this.lotteryDlg)
+        this.updateLotteryDlg()
         this.updateTicket(0)
-        
     }
 
     addClickEvent(btn:Node, idx:number){
@@ -380,37 +560,20 @@ export class GameManager extends Component {
 
     showChance(idx:number){
         console.info("task", idx)
-        let taskInfo = CHANCE_MAP[idx]
-        if (taskInfo.taskType == 0){
-            this._chanceId = idx
-            this.doEvent()
-            return
-        }
-
-        this.openDlg(this.qiyuDlg)
-        let titleDesc = ""
-        let leftDesc = ""
-        let rightDesc = ""
-        
-        titleDesc = TASK_TEXT[taskInfo.taskType][taskInfo.taskID]
-        if (taskInfo.taskType == 1){
-            leftDesc = "出战"
-            rightDesc = "逃走"
-        }
-        else if(taskInfo.taskTyp == 2){
-            leftDesc = "探索"
-            rightDesc = "无视"
-        }
-        else{
-            leftDesc = "参加"
-            rightDesc = "拒绝"
-        }
-
-        this.qiyuDlg.getChildByName("Bg").getChildByName("title").getComponent(RichText).string = `${titleDesc}`
-        this.qiyuDlg.getChildByName("Bg").getChildByName("choice1").getChildByName("Label").getComponent(Label).string = `${leftDesc}`
-        this.qiyuDlg.getChildByName("Bg").getChildByName("choice2").getChildByName("Label").getComponent(Label).string = `${rightDesc}`
-
         this._chanceId = idx
+        this.doEvent()
+        
+
+        // this.openDlg(this.qiyuDlg)
+        // let titleDesc = ""
+        // let leftDesc = ""
+        // let rightDesc = ""
+
+        // this.qiyuDlg.getChildByName("Bg").getChildByName("title").getComponent(RichText).string = `${titleDesc}`
+        // this.qiyuDlg.getChildByName("Bg").getChildByName("choice1").getChildByName("Label").getComponent(Label).string = `${leftDesc}`
+        // this.qiyuDlg.getChildByName("Bg").getChildByName("choice2").getChildByName("Label").getComponent(Label).string = `${rightDesc}`
+
+        //this._chanceId = idx
     }
 
     showResult(desc:string){
@@ -494,8 +657,8 @@ export class GameManager extends Component {
         return value
     }
 
-    rewardRandom(rewardList:any,totalWeight:number){
-        let randValue = this.rand(1,totalWeight)
+    rewardRandom(rewardList:any){
+        let randValue = this.rand(1,100)
         let randIndex = 0
         for (let index in rewardList){
             if (randValue <= rewardList[index] ){
@@ -513,7 +676,7 @@ export class GameManager extends Component {
     startLottery(num:number){
         let resultTb = new Map([])
         for (let i = 1; i <= num ; i++){
-            let result = this.rewardRandom(LOTTERY, 100)
+            let result = this.rewardRandom(LOTTERY)
             if (resultTb.has(result)){
                 let num = resultTb.get(result)
                 resultTb.set(result, num + 1)
@@ -528,16 +691,16 @@ export class GameManager extends Component {
             let kindLevel = result % 3 + 1
             if (type == 1){//修为丹
                 let level = Math.ceil(this._level / 3)
-                let itemId = 40000 + level * 1000 + kindLevel
-                let itemCnt = 50
+                let itemId = 40000 + level * 1000 + kindLevel * 100
+                let itemCnt = 10
                 if (kindLevel == 2){
-                    itemCnt = 10
+                    itemCnt = 5
                 }
                 else if(kindLevel == 3){
-                    itemCnt = 1
+                    itemCnt = 2
                 }
                 this.doAddItem(itemId, itemCnt * cnt)
-                rewardDesc += this.getRewardDesc(itemId, cnt)
+                rewardDesc += this.getRewardDesc(itemId, itemCnt * cnt)
             }
             else if (type == 2){//功法
                 let level = Math.ceil(this._level / 3)
@@ -547,8 +710,28 @@ export class GameManager extends Component {
             }
             else {
                 let rand = this.rand(1,6)
-                this._treasureTb.set(rand, 1)
-                rewardDesc += `[<color=red>${TREASURE[rand]}</color>]`
+                if (this._treasureTb.has(rand)){
+                    rewardDesc += `[<color=red>${TREASURE[rand]}</color>]，由于重复获得，转化为[<color=#efb134>上品修为丹</color>]*10`
+                    let level = Math.ceil(this._level / 3)
+                    let itemId = 40000 + level * 1000 + 300
+                    this.doAddItem(itemId,10)
+                }
+                else{
+                    this._treasureTb.set(rand, 1)
+                    rewardDesc += `[<color=red>${TREASURE[rand]}</color>]`
+                    if (rand == 2){
+                        this.updateXiulianRateDlg()
+                    }
+                    else if (rand == 3){
+                        this.updateDps()
+                    }
+                    else if (rand == 4){
+                        this.updateHealth(200)
+                    }
+                    this.updateLotteryDlg()
+                }
+                
+               
             }
         }
         this.updateTicket(-num)
@@ -563,6 +746,7 @@ export class GameManager extends Component {
             return
         }
         this._ticketNum += info.ticket
+        this.updateHealth(-cost)
         let desc = `挑战完成，获得<color=red>鸿蒙符</color>*${info.ticket}`
         this.closeConfirmDlg()
         this.showResult(desc)
@@ -582,17 +766,15 @@ export class GameManager extends Component {
                 rewardLv = Number(i)+1
             }
         }
-        let itemDesc = "秘境完成，获得奖励"
+        let itemDesc = `秘境完成，获得奖励`
         let reward = rewardTb[rewardLv]
-        this.updateMoney(reward.money)
-        let totalWeight = 100
         let type = this.rand(1,3)
-        let randLevel = this.rewardRandom(reward.rate, totalWeight)
-        let itemId = type * 10000 + (this._mijingType - 1)* 1000 + randLevel 
-        console.info(type, randLevel)
+        let randLevel = this.rewardRandom(reward.rate) + 1
+        let itemId = type * 10000 + (this._mijingType)* 1000 + randLevel*100
+        console.info(itemId)
         this.doAddItem(itemId, 1)
         let colorDesc = COLOR_LEVEL[ITEM[itemId].level]
-        let valueDesc = `[<color=green>灵石*${reward.money}</color>][<color=${colorDesc}>${ITEM[itemId].name}</color>]`
+        let valueDesc = `[<color=${colorDesc}>${ITEM[itemId].name}</color>]`
         itemDesc += valueDesc
         
         this.updateHealth(-MIJING[this._mijingType].cost)
@@ -607,10 +789,15 @@ export class GameManager extends Component {
         }
         else{
             let addExp = this._realSpeed * this._biguanDay * COST_BIGUAN[this._biguanType].rate
+            let desc = `闭关成功，经验增加${addExp}`
+            if (this._treasureTb.has(6)){
+                let extraExp = Math.ceil(addExp * 0.5)
+                desc += `(额外加成${extraExp})`
+                addExp += extraExp
+            }
             this.doAddExp(addExp)
             this.updateHealth(-this._biguanDay)
-            this.updateMoney(-needCost)
-            let desc = `闭关成功，经验增加${addExp}`
+            this.updateMoney(-needCost, false)
             this.showMsg(desc)
             this.closeConfirmDlg()
         }
@@ -649,67 +836,41 @@ export class GameManager extends Component {
 
     doEvent(){
         this.openDlg(this.resultDlg)
-        let info = CHANCE_MAP[this._chanceId]
+        let info = CHANCE[this._chanceId]
+        console.info(this._chanceId, info)
+        let resultInfo = RESULT[info.result]
         
-        let resultID = 0
-        if ("conditionType" in info)
-        {
-            if (info.conditionType == 1){
-                if (this._dps >= info.conditionValue){
-                    resultID = info.result1
-                }
-                else
-                {
-                    resultID = info.result2
-                }
-            }
-            else{
-                if (this._level >= info.conditionValue){
-                    resultID = info.result1
-                }
-                else
-                {
-                    resultID = info.result2
-                }
-            }
-        }
-        else{
-            resultID = info.result1
-        }
-        
-        let resultInfo = RESULT[resultID]
-        let value = 0
         let itemDesc = ""
         let titleDesc = resultInfo.desc
-        value = resultInfo.value
+        let value = resultInfo.value
         if(resultInfo.type == 1){
-            itemDesc = `<color=blue>${value}</color>`
+            itemDesc = `<color=#3792F9>${value}</color>`
+            if (this._treasureTb.has(6)){
+                let extraExp = Math.ceil(value*0.5)
+                itemDesc +=`(额外加成${extraExp})`
+                value += extraExp
+            }
             this.doAddExp(value)
         }
-        else if (resultInfo.type ==2)
-        {
-            for (let i in value){
-                let item = value[i]
-                let itemId = item.itemId
-                let cnt = item.Amount
-                this.doAddItem(itemId, cnt)
-                itemDesc += this.getRewardDesc(itemId, cnt)
 
-            } 
-        }
-        else if (resultInfo.type == 3)
+        else if (resultInfo.type == 2)
         {
-            itemDesc = `<color=blue>${value}</color>`
-           this.updateMoney(value)
+            itemDesc = `<color=#3792F9>${value}</color>`
+            if (this._treasureTb.has(5)){
+                let addNum = Math.ceil(value * 0.5)
+                itemDesc += `(额外加成${addNum})`
+            }
+           this.updateMoney(value, true)
         }
-        else if (resultInfo.type == 4)
+
+        else if (resultInfo.type ==3)
         {
-            itemDesc = `<color=blue>${value}</color>`
-           this.updateHealth(value)
+            
+            this.doAddItem(value, 1)
+            itemDesc += this.getRewardDesc(value, 1)
+            
         }
-        else{
-            itemDesc = `<color=white>${value}</color>`
-        }
+    
         let desc = `${titleDesc}${itemDesc}`
         this.showResult(desc)
     }
@@ -851,8 +1012,22 @@ export class GameManager extends Component {
             }
 
             if (itemInfo.kind == ITEM_KIND.DRUG){
-                this.doAddExp(itemInfo.value)
-                this.showMsg(`经验增加${itemInfo.value}`)
+                let addRate = 0
+                let value = itemInfo.value
+                let desc = `经验增加${itemInfo.value}`
+                if (this._treasureTb.has(1)){
+                    addRate +=  0.5
+                }
+                if (this._treasureTb.has(6)){
+                    addRate +=  0.5
+                }
+                if (addRate > 0){
+                    let addValue = Math.ceil(value * addRate)
+                    value += addValue
+                    desc +=  `(额外加成${addValue})`
+                }
+                this.doAddExp(value)
+                this.showMsg(desc)
             }
 
             let num = this._itemTb.get(this._chooseItemId)
@@ -877,8 +1052,7 @@ export class GameManager extends Component {
             let itemInfo = ITEM[this._chooseItemId]
             if (num == 1){
                 this._itemTb.delete(this._chooseItemId)
-                this.updateMoney(itemInfo.price)
-                this.showMsg(`灵石增加${itemInfo.price}`)
+                this.updateMoney(itemInfo.price, false)
                 this.updateBag()
                 this._chooseItemId = 0
             }
@@ -933,8 +1107,7 @@ export class GameManager extends Component {
         else{
             this._itemTb.set(this._chooseItemId, this._ownNum - this._sellNum)
         }
-        this.updateMoney(itemInfo.price * this._sellNum)
-        this.showMsg(`灵石增加${itemInfo.price * this._sellNum}`)
+        this.updateMoney(itemInfo.price * this._sellNum, false)
         this.updateBag()
        
         this.closeSellDlg()
@@ -962,8 +1135,18 @@ export class GameManager extends Component {
     }
 
     updateXiulianRateDlg(){
+        if(this._treasureTb.has(2)){
+            this._realSpeed = Math.ceil(this._realSpeed * 1.5)
+        }
         this.expDlg.getChildByName("Rate").getComponent(Label).string = `${this._realSpeed}/道年`
     }
+
+    updateBossDlg(){
+        find("Canvas/AllDlg/BossDlg/Bg/choice1/Label-001").getComponent(Label).string = `战力>${BOSS[1].dps}`
+        find("Canvas/AllDlg/BossDlg/Bg/choice2/Label-001").getComponent(Label).string = `战力>${BOSS[2].dps}`
+        find("Canvas/AllDlg/BossDlg/Bg/choice3/Label-001").getComponent(Label).string = `战力>${BOSS[3].dps}`
+    }
+
 
     updateCostMoneyDlg(){
         for(let i=1; i<4;i++){
@@ -973,6 +1156,13 @@ export class GameManager extends Component {
             btn.getChildByName("Label-001").getComponent(Label).string = `${COST_BIGUAN[i].rate}倍修炼速度`
             btn.getChildByName("Label-002").getComponent(Label).string = `${cost}灵石/道年`
         }
+    }
+    updateLotteryDlg(){
+        let Reward = find("Canvas/AllDlg/LotteryDlg/Bg/Reward/Stage")
+        for (let i = 1; i<=6; i++){
+            Reward.getChildByName(`Item${i}`).getChildByName("state").active = this._treasureTb.has(i)
+        }
+
     }
 
     updateGongFa(info:object){
@@ -1005,15 +1195,37 @@ export class GameManager extends Component {
         this.updateDps()
     }
 
-    updateMoney(num:number){
+    updateMoney(num:number, noTips:boolean){
+        if (num > 0){
+            let desc = `灵石增加${num}`
+            if (this._treasureTb.has(5)){
+                let addNum = Math.ceil(num * 0.5)
+                desc += `(额外加成${addNum})`
+                num += addNum
+            }
+            if (!noTips){
+                this.showMsg(desc) 
+            }
+            
+        }
+       
         this._money += num
         find("Canvas/Money/desc").getComponent(RichText).string = `${this._money}`
     }
     updateDps(){
-        let weaponDps = ITEM[this._weapon].value
-        let armorDps = ITEM[this._armor].value
+        let weaponDps = 0
+        let armorDps = 0
+        if (this._weapon != 0 ){
+            weaponDps = ITEM[this._weapon].value
+        }
+        if (this._armor != 0 ){
+            armorDps = ITEM[this._armor].value
+        }
         let lvDps = EXP[this._level].dps
         this._dps = weaponDps + armorDps + lvDps
+        if(this._treasureTb.has(3)){
+            this._dps = this._dps * 2
+        }
         find("Canvas/Dps/desc").getComponent(RichText).string = `${this._dps}`
     }
 
