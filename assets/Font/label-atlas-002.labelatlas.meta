@@ -2,7 +2,7 @@
   "ver": "1.0.1",
   "importer": "label-atlas",
   "imported": true,
-  "uuid": "c0f769ee-f1bf-4258-81da-7e59530d5b21",
+  "uuid": "060a7dce-45ba-49db-bcaa-4911bce7755b",
   "files": [
     ".json"
   ],
@@ -12,7 +12,7 @@
     "itemHeight": 72,
     "fontSize": 63.36,
     "startChar": "0",
-    "spriteFrameUuid": "9decfad9-846c-4dba-a1ad-9f3c43ca5b09@f9941",
+    "spriteFrameUuid": "0e498ce8-2cb1-4ddd-98e2-a843a8940a28@f9941",
     "_fntConfig": {
       "commonHeight": 72,
       "fontSize": 63,

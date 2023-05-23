@@ -690,7 +690,7 @@ export class GameManager extends Component {
             let type = Math.floor(result / 3)
             let kindLevel = result % 3 + 1
             if (type == 1){//修为丹
-                let level = Math.ceil(this._level / 3)
+                let level = Math.max(1,Math.ceil(this._level / 3))
                 let itemId = 40000 + level * 1000 + kindLevel * 100
                 let itemCnt = 10
                 if (kindLevel == 2){
