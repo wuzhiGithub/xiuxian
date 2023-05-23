@@ -890,7 +890,7 @@ export class GameManager extends Component {
         }
         if (num <= 0){
             this._year -= num
-            find("Canvas/Exp/YearText").getComponent(Label).string = `${this._year}道年`
+            find("Canvas/Exp/YearNode/YearText").getComponent(Label).string = `${this._year}`
         }
         let color = "white"
         if (this._health <= 30){
@@ -1138,7 +1138,7 @@ export class GameManager extends Component {
         if(this._treasureTb.has(2)){
             this._realSpeed = Math.ceil(this._realSpeed * 1.5)
         }
-        this.expDlg.getChildByName("Rate").getComponent(Label).string = `${this._realSpeed}/道年`
+        this.expDlg.getChildByName("RateNode").getChildByName("Rate").getComponent(Label).string = `${this._realSpeed}/道年`
     }
 
     updateBossDlg(){
@@ -1153,7 +1153,6 @@ export class GameManager extends Component {
             let cost = COST_BIGUAN[i].cost * this._baseCost
             let btnName = `choice${i}`
             let btn = this.biguanDlg.getChildByName("Bg").getChildByName(btnName)
-            btn.getChildByName("Label-001").getComponent(Label).string = `${COST_BIGUAN[i].rate}倍修炼速度`
             btn.getChildByName("Label-002").getComponent(Label).string = `${cost}灵石/道年`
         }
     }
