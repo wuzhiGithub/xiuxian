@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, random,Animation, Label, RichText, find, ProgressBar, tween, UITransform, Prefab, Button,instantiate, ScrollView,EventHandler, Sprite, loader, resources, assert, SpriteFrame, Slider, math } from 'cc';
+import { _decorator, Component, Node, random,Animation, Label, RichText, find, ProgressBar, tween, UITransform, Prefab, Button,instantiate, ScrollView,EventHandler, Sprite, loader, resources, assert, SpriteFrame, Slider, math, dragonBones } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { ITEM } from './Item';
@@ -437,13 +437,14 @@ export class GameManager extends Component {
         this.confirmDlg.active = false
         this.sellDlg.active = false
         this.lotteryDlg.active = false
+       
     }
 
     update(deltaTime: number) {
         
     }
     checkOpen(){
-        return this.qiyuDlg.active || this.resultDlg.active || this.bagDlg.active || this.bossDlg.active || this.biguanDlg.active || this.mijingDlg.active || this.confirmDlg.active || this.sellDlg.active || this.lotteryDlg.active
+        return this.qiyuDlg.active || this.resultDlg.active || this.bagDlg.active || this.bossDlg.active || this.biguanDlg.active || this.mijingDlg.active || this.confirmDlg.active || this.sellDlg.active || this.lotteryDlg.active 
     }
 
     openDlg(dlg:Node){
@@ -557,6 +558,20 @@ export class GameManager extends Component {
         msg.getComponent(Animation).play("msg")
         msg.getChildByName("RichText").getComponent(RichText).string = desc
     }
+    showTips(type:number){
+        let msg = find("Canvas/AllDlg/Tips")
+        let pngName = ""
+        if (type == 1){
+            pngName = "levelup"
+        }
+        else{
+            pngName = "success"
+        }
+        resources.load(`${pngName}/spriteFrame`, SpriteFrame, (err, spriteFrame) => {
+            msg.getChildByName("Sprite").getComponent(Sprite).spriteFrame = spriteFrame;
+        });
+        msg.getComponent(Animation).play("tips")
+    }
 
     showChance(idx:number){
         console.info("task", idx)
@@ -586,10 +601,6 @@ export class GameManager extends Component {
     }
 
     clickChoice1(){
-        this.closeTips()
-        this.doEvent()
-    }
-    clickChoice2(){
         this.closeTips()
     }
 
@@ -751,7 +762,6 @@ export class GameManager extends Component {
         this.closeConfirmDlg()
         this.showResult(desc)
     }
-
     confirmMiJing(){
         let cost = MIJING[this._mijingType].cost
         if (this._health < cost){
@@ -835,7 +845,7 @@ export class GameManager extends Component {
     }
 
     doEvent(){
-        this.openDlg(this.resultDlg)
+        this.openDlg(this.qiyuDlg)
         let info = CHANCE[this._chanceId]
         console.info(this._chanceId, info)
         let resultInfo = RESULT[info.result]
@@ -872,7 +882,12 @@ export class GameManager extends Component {
         }
     
         let desc = `${titleDesc}${itemDesc}`
-        this.showResult(desc)
+        this.qiyuDlg.getChildByName("Bg").getChildByName("Content").getChildByName("title").getComponent(RichText).string = `${desc}`
+        resources.load(`qiyu${resultInfo.type}/spriteFrame`, SpriteFrame, (err, spriteFrame) => {
+            this.qiyuDlg.getChildByName("Bg").getChildByName("Content").getChildByName("Sprite").getComponent(Sprite).spriteFrame = spriteFrame;
+        });
+        this.qiyuDlg.getChildByName("Bg").getChildByName("Content").getComponent(Animation).play("result")
+        
     }
    
     refreshExp(){
@@ -914,7 +929,7 @@ export class GameManager extends Component {
         this.refreshExp()
         this.updateHealth(addHealth)
         if (addHealth > 0){
-            this.showMsg("境界提升，寿命增加")
+            this.showTips(1)
         }
         this.updateDps()
         this._baseCost = BASE_COST[this._level]
