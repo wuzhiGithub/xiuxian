@@ -144,7 +144,7 @@ const MIJING = {
         }
     },
     [2]: {
-        cost:5,
+        cost:1,
         dpsLevel:[0,5000,11500,22500],
         reward:{
             [1]:{
@@ -167,7 +167,7 @@ const MIJING = {
         }
     },
     [3]: {
-        cost:10,
+        cost:1,
         dpsLevel:[0,20000,35000,65000],
         reward:{
             [1]:{
@@ -190,7 +190,7 @@ const MIJING = {
         }
     },
     [4]: {
-        cost:20,
+        cost:1,
         dpsLevel:[0,50000,90000,170000],
         reward:{
             [1]:{
@@ -213,7 +213,7 @@ const MIJING = {
         }
     },
     [5]: {
-        cost:50,
+        cost:1,
         dpsLevel:[0,90000,200000,350000],
         reward:{
             [1]:{
@@ -418,7 +418,7 @@ export class GameManager extends Component {
         this._itemTb = new Map([]);
         this._sellNum = 0;
         this._ownNum = 0;
-        this._ticketNum = 0;
+        this._ticketNum = 100;
         this._treasureTb = new Map([]);
         this.uplevel()
         this.updateHealth(0)
@@ -670,6 +670,7 @@ export class GameManager extends Component {
 
     rewardRandom(rewardList:any){
         let randValue = this.rand(1,100)
+        console.info("rand", randValue)
         let randIndex = 0
         for (let index in rewardList){
             if (randValue <= rewardList[index] ){
@@ -680,6 +681,7 @@ export class GameManager extends Component {
                 randValue -= rewardList[index]
             }
         }
+        console.info("randIndex", randIndex)
         return randIndex
     }
 
@@ -700,9 +702,10 @@ export class GameManager extends Component {
         for (let [result, cnt] of resultTb){
             let type = Math.floor(result / 3)
             let kindLevel = result % 3 + 1
-            if (type == 1){//修为丹
+            if (type == 0){//修为丹
                 let level = Math.max(1,Math.ceil(this._level / 3))
                 let itemId = 40000 + level * 1000 + kindLevel * 100
+                console.info(itemId)
                 let itemCnt = 10
                 if (kindLevel == 2){
                     itemCnt = 5
@@ -713,9 +716,10 @@ export class GameManager extends Component {
                 this.doAddItem(itemId, itemCnt * cnt)
                 rewardDesc += this.getRewardDesc(itemId, itemCnt * cnt)
             }
-            else if (type == 2){//功法
-                let level = Math.ceil(this._level / 3)
-                let itemId = 30000 + level * 1000 + kindLevel
+            else if (type == 1){//功法
+                let level = Math.max(1,Math.ceil(this._level / 3))
+                let itemId = 30000 + level * 1000 + kindLevel * 100
+                console.info(itemId)
                 this.doAddItem(itemId, cnt)
                 rewardDesc += this.getRewardDesc(itemId, cnt)
             }
@@ -723,8 +727,9 @@ export class GameManager extends Component {
                 let rand = this.rand(1,6)
                 if (this._treasureTb.has(rand)){
                     rewardDesc += `[<color=red>${TREASURE[rand]}</color>]，由于重复获得，转化为[<color=#efb134>上品修为丹</color>]*10`
-                    let level = Math.ceil(this._level / 3)
+                    let level = Math.max(1,Math.ceil(this._level / 3))
                     let itemId = 40000 + level * 1000 + 300
+                    console.info(itemId)
                     this.doAddItem(itemId,10)
                 }
                 else{
