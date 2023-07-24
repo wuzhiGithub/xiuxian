@@ -11,7 +11,7 @@
     "speed": 1,
     "wrapMode": 1,
     "enableTrsBlending": false,
-    "_duration": 1,
+    "_duration": 1.3333333333333333,
     "_hash": 500763545,
     "_tracks": [
       {
@@ -66,7 +66,7 @@
     "_times": [
       0,
       0.5,
-      1
+      1.3333333333333333
     ],
     "_values": [
       {
@@ -100,10 +100,7 @@
         "rightTangentWeight": 1,
         "leftTangent": 0,
         "leftTangentWeight": 1,
-        "easingMethod": 0,
-        "__editorExtras__": {
-          "tangentMode": 0
-        }
+        "easingMethod": 0
       }
     ],
     "preExtrapolation": 1,
@@ -120,7 +117,7 @@
     "_times": [
       0,
       0.5,
-      1
+      1.3333333333333333
     ],
     "_values": [
       {
@@ -154,10 +151,7 @@
         "rightTangentWeight": 1,
         "leftTangent": 0,
         "leftTangentWeight": 1,
-        "easingMethod": 0,
-        "__editorExtras__": {
-          "tangentMode": 0
-        }
+        "easingMethod": 0
       }
     ],
     "preExtrapolation": 1,
@@ -174,7 +168,7 @@
     "_times": [
       0,
       0.5,
-      1
+      1.3333333333333333
     ],
     "_values": [
       {
@@ -208,10 +202,7 @@
         "rightTangentWeight": 1,
         "leftTangent": 0,
         "leftTangentWeight": 1,
-        "easingMethod": 0,
-        "__editorExtras__": {
-          "tangentMode": 0
-        }
+        "easingMethod": 0
       }
     ],
     "preExtrapolation": 1,
@@ -266,7 +257,7 @@
     "_times": [
       0,
       0.5,
-      1
+      1.3333333333333333
     ],
     "_values": [
       {

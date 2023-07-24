@@ -178,7 +178,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 106.66,
+      "width": 119.99,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -204,10 +204,10 @@
       "__id__": 7
     },
     "_lineHeight": 40,
-    "_string": "<color=#00ff00>绿色宝扇扇</color><color=#0fffff>(凡)</color>",
+    "_string": "<color=#00ff00>绿色大宝扇</color><color=#0fffff>(凡)</color>",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_fontSize": 16,
+    "_fontSize": 18,
     "_maxWidth": 0,
     "_fontFamily": "Arial",
     "_font": null,
@@ -254,8 +254,8 @@
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 30,
-      "y": -32,
+      "x": 19.034,
+      "y": -39.273,
       "z": 0
     },
     "_lrot": {
@@ -293,7 +293,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 21.12,
+      "width": 70,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -319,11 +319,11 @@
       "__id__": 13
     },
     "_lineHeight": 40,
-    "_string": "x1",
-    "_horizontalAlign": 1,
+    "_string": "x100",
+    "_horizontalAlign": 2,
     "_verticalAlign": 1,
     "_fontSize": 20,
-    "_maxWidth": 0,
+    "_maxWidth": 70,
     "_fontFamily": "Arial",
     "_font": null,
     "_isSystemFontUsed": true,
@@ -360,8 +360,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 90,
-      "height": 90
+      "width": 140,
+      "height": 140
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -510,8 +510,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 90,
-      "height": 90
+      "width": 140,
+      "height": 140
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, random,Animation, Label, RichText, find, ProgressBar, tween, UITransform, Prefab, Button,instantiate, ScrollView,EventHandler, Sprite, loader, resources, assert, SpriteFrame, Slider, math, dragonBones } from 'cc';
+import { _decorator, sys, Component, Node, random,Animation, Label, RichText, find, ProgressBar, tween, UITransform, Prefab, Button,instantiate, ScrollView,EventHandler, Sprite, loader, resources, assert, SpriteFrame, Slider, math, dragonBones, macro, Vec2 } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { ITEM } from './Item';
@@ -335,6 +335,54 @@ const TREASURE = {
     [6]: "众妙石",    //经验加成
 }
 
+interface UserData{
+    name:string
+    level:number
+    gold:number
+}
+
+const GUIDE = {
+    [1]:{
+        guideNode:'QiYu',
+        x:0,
+        y:50,
+        btnX:-80,
+        btnY:-80,
+        des:`点击奇遇可触发不同游历事件，获取经验和灵石`,
+    },
+    [2]:{
+        guideNode:'BiGuan',
+        x:100,
+        y:50,
+        btnX:-160,
+        btnY:-80,
+        des:`点击闭关可耗费灵石加速修炼`,
+    },
+    [3]:{
+        guideNode:'MiJing',
+        x:250,
+        y:0,
+        btnX:-280,
+        btnY:0,
+        des:`可根据境界进入不同的秘境区域，是获取功法和装备的主要来源`,
+    },
+    [4]:{
+        guideNode:'Boss',
+        x:250,
+        y:0,
+        btnX:-280,
+        btnY:0,
+        des:`击败妖兽可获得鸿蒙符，战力超过一定条件才能进行跳转`,
+    },
+    [5]:{
+        guideNode:'Lottery',
+        x:-150,
+        y:50,
+        btnX:50,
+        btnY:-50,
+        des:`珍宝殿内存放着大量的天材地宝，可通过鸿蒙符抽取`,
+    },
+}
 
 @ccclass('GameManager')
 export class GameManager extends Component {
@@ -359,6 +407,10 @@ export class GameManager extends Component {
     public sellDlg:Node = null; //
     @property({type:Node})
     public lotteryDlg:Node = null; //
+    @property({type:Node})
+    public useDlg:Node = null; //
+    @property({type:Node})
+    public settingDlg:Node = null; //
 
     @property({type:Prefab})
     public item:Prefab = null;
@@ -393,38 +445,134 @@ export class GameManager extends Component {
     private _ownNum:number = 0;
     private _ticketNum:number = 0;
     private _treasureTb = new Map([]);
+    private _guideId = 1;
 
     start() {
         this.hideAllDlg()
         this.initData()
+        this.checkShowGuide()
+        
     }
 
+    checkShowGuide(){
+        let hasGuide = sys.localStorage.getItem("hasGuide")
+        if (hasGuide != `1`){
+            this._guideId = 1
+            this.showGuide()
+        }
+        
+    }
+    showGuide(){
+        let guideNode = find('Canvas/Guide')
+        if (this._guideId > 5){
+            guideNode.active = false
+            sys.localStorage.setItem("hasGuide", `1`)
+        }
+        else{
+            let guideInfo = GUIDE[this._guideId]
+            let pos = find(`Canvas/${guideInfo.guideNode}`).getPosition()
+            guideNode.active = true
+            let guideSprite =  guideNode.getChildByName("Node").getChildByName("RichText")
+            guideSprite.setPosition(pos.x + guideInfo.x, pos.y+ guideInfo.y, pos.z)
+            guideSprite.getComponent(RichText).string = `${guideInfo.des}`
+            guideSprite.getChildByName("Sprite").setPosition(guideInfo.btnX, guideInfo.btnY)
+            if(this._guideId == 5){
+                guideNode.getChildByName("Next").getComponent(RichText).string = `已完成引导，点击即可开始游戏`
+            }
+        }
+       
+        
+    }
+
+    clickGuideNext(){
+        this._guideId += 1
+        this.showGuide()
+    }
+
+    saveUserData(){        
+        const userData = { 
+            level:this._level,
+            weapon:this._weapon,
+            gongfa:this._gongfa,
+            armor:this._armor,
+            baseCost:this._baseCost,
+            health:this._health,
+            realSpeed:this._realSpeed,
+            baseSpeed: this._baseSpeed ,
+            curExp:this._curExp ,
+            needExp:this._needExp ,
+            money: this._money ,
+            dps: this._dps ,
+            year:this._year,
+            itemTb: this._itemTb ,
+            ticketNum:this._ticketNum ,
+            treasureTb:this._treasureTb ,
+        }
+        const jsonStr = JSON.stringify(userData);
+        sys.localStorage.setItem("userData",jsonStr);
+        console.info(userData)
+    }
+
+
     initData(){
-        this._level = 0; //境界
-        this._weapon = 0; //法宝
-        this._gongfa = 0; //功法
-        this._armor = 0; //防具
-        this._baseCost = 10;
-        this._health = 70; //寿命
-        this._realSpeed = 10; //修炼速度
-        this._baseSpeed = 10; //基础修炼速度
-        this._curExp = 0;//当前经验
-        this._needExp = 10;//境界所需经验
-        this._money = 0; //灵石
+        const jsonStr = sys.localStorage.getItem("userData")
+        let userData
+        if(jsonStr){
+            userData = JSON.parse(jsonStr) as UserData;;
+        }
+        if (userData){
+            this._level = userData.level; //境界
+            this._weapon = userData.weapon; //法宝
+            this._gongfa = userData.gongfa; //功法
+            this._armor = userData.armor; //防具
+            this._baseCost = userData.baseCost;
+            this._health = userData.health; //寿命
+            this._realSpeed = userData.realSpeed; //修炼速度
+            this._baseSpeed = userData.baseSpeed; //基础修炼速度
+            this._curExp = userData.curExp;//当前经验
+            this._needExp = userData.needExp;//境界所需经验
+            this._money = userData.money; //灵石
+            this._dps = userData.dps;
+            this._year = userData.year;
+            this._ticketNum = userData.ticketNum;
+            this._itemTb = new Map(Object.entries(userData.itemTb));
+            this._treasureTb =  new Map(Object.entries(userData.treasureTb));
+        }
+        else{
+            this._level = 0; //境界
+            this._weapon = 0; //法宝
+            this._gongfa = 0; //功法
+            this._armor = 0; //防具
+            this._baseCost = 10;
+            this._health = 70; //寿命
+            this._realSpeed = 10; //修炼速度
+            this._baseSpeed = 10; //基础修炼速度
+            this._curExp = 0;//当前经验
+            this._needExp = 10;//境界所需经验
+            this._money = 0; //灵石
+            this._dps = 0;
+            this._year = 0;
+            this._ticketNum = 0;
+            this._itemTb = new Map([]);
+            this._treasureTb = new Map([]);
+        }
+       
+        this._biguanDay = 0;
+        this._biguanType = 0;
         this._chooseItemId = 0;
         this._mijingType = 0;
         this._bossType = 0;
         this._func = null;
-        this._itemTb = new Map([]);
         this._sellNum = 0;
         this._ownNum = 0;
-        this._ticketNum = 100;
-        this._treasureTb = new Map([]);
         this.uplevel()
+        this.updateMoney(0,false)
+        this.updateDps()
         this.updateHealth(0)
         this.updateCostMoneyDlg()
         this.updateXiulianRateDlg()
         this.updateBossDlg()
+        this.updateEquipInfo()
     }
 
     hideAllDlg(){
@@ -437,14 +585,47 @@ export class GameManager extends Component {
         this.confirmDlg.active = false
         this.sellDlg.active = false
         this.lotteryDlg.active = false
+        this.useDlg.active = false
+        this.settingDlg.active = false
        
     }
 
-    update(deltaTime: number) {
+    
+
+    updateEquipInfo(){
+        if (this._gongfa != 0){
+            let armorInfo = ITEM[this._gongfa] 
+            let colorDesc = COLOR_LEVEL[armorInfo.level]
+            find("Canvas/FangJu/desc").getComponent(RichText).string = `<color=${colorDesc}>[${armorInfo.name}]</color>`
+        }
+        else{
+            find("Canvas/FangJu/desc").getComponent(RichText).string = ``
+        }
         
+        if (this._armor != 0){
+            let armorInfo = ITEM[this._armor] 
+            let colorDesc = COLOR_LEVEL[armorInfo.level]
+            find("Canvas/GongFa/desc").getComponent(RichText).string = `<color=${colorDesc}>[${armorInfo.name}]</color>`
+        }
+        else{
+            find("Canvas/GongFa/desc").getComponent(RichText).string = ``
+        }
+
+        if (this._weapon != 0){
+            let armorInfo = ITEM[this._weapon] 
+            let colorDesc = COLOR_LEVEL[armorInfo.level]
+            find("Canvas/FaBao/desc").getComponent(RichText).string = `<color=${colorDesc}>[${armorInfo.name}]</color>`
+        }
+        else{
+            find("Canvas/FaBao/desc").getComponent(RichText).string = ``
+        }
+
+    }
+
+    update(deltaTime: number) {
     }
     checkOpen(){
-        return this.qiyuDlg.active || this.resultDlg.active || this.bagDlg.active || this.bossDlg.active || this.biguanDlg.active || this.mijingDlg.active || this.confirmDlg.active || this.sellDlg.active || this.lotteryDlg.active 
+        return this.qiyuDlg.active || this.resultDlg.active || this.bagDlg.active || this.bossDlg.active || this.biguanDlg.active || this.mijingDlg.active || this.confirmDlg.active || this.sellDlg.active || this.lotteryDlg.active || this.useDlg.active || this.settingDlg.active
     }
 
     openDlg(dlg:Node){
@@ -460,17 +641,11 @@ export class GameManager extends Component {
 
 
     clickBiGuan(){
-        if (this.checkOpen()){
-            return
-        }
         this.openDlg(this.biguanDlg)
        
     }
 
     clickBag(){
-        if (this.checkOpen()){
-            return
-        }
         this.openDlg(this.bagDlg)
         this.updateBag()
         
@@ -550,7 +725,28 @@ export class GameManager extends Component {
            
         }
         this._chooseItemId = Number(idx)
+        let itemInfo = ITEM[this._chooseItemId]
+        let desc
+        if (itemInfo.kind == ITEM_KIND.DRUG){
+            desc = `<b>经验：</b><color=#green>+${itemInfo.value}</color>`
+        }
+        else if (itemInfo.kind == ITEM_KIND.GONG_FA){
+            desc = `<b>修炼速度：</b><color=#green>+${itemInfo.value}</color>`
+        }
+        else{
+            desc = `<b>战力：</b><color=#green>+${itemInfo.value}</color>`
+        }
+        let colorDesc = COLOR_LEVEL[itemInfo.level]
+        let valueDesc = `<color=${colorDesc}>${itemInfo.name}</color>`
+        find("Canvas/AllDlg/BagDlg/Bg/Desc/ItemIcon/RichText").getComponent(RichText).string = valueDesc
+        find("Canvas/AllDlg/BagDlg/Bg/Desc/ItemDes/RichText").getComponent(RichText).string = desc
+        find("Canvas/AllDlg/BagDlg/Bg/Desc/ItemDes/SellText").getComponent(RichText).string = `<b>价值：</b><color=#ffff33>${itemInfo.price}</color>`
         
+    }
+    clearChooseItemDesc(){
+        find("Canvas/AllDlg/BagDlg/Bg/Desc/ItemIcon/RichText").getComponent(RichText).string = ``
+        find("Canvas/AllDlg/BagDlg/Bg/Desc/ItemDes/RichText").getComponent(RichText).string = ``
+        find("Canvas/AllDlg/BagDlg/Bg/Desc/ItemDes/SellText").getComponent(RichText).string = ``
     }
 
     showMsg(desc:string){
@@ -662,6 +858,29 @@ export class GameManager extends Component {
             this.showConfirmDlg(desc, this.confirmMiJing)
         }
     }
+    confirmReborn(){
+        this.showMsg("已重生，一切又回归初始...")
+        sys.localStorage.removeItem("userData")
+        this.initData()
+    }
+    clickReborn(){
+        let desc = `是否进行重生？`
+        this.showConfirmDlg(desc, this.confirmReborn)
+    }
+    clickSave(){
+        this.saveUserData()
+        this.showMsg("游戏已保存")
+    }
+    clickSetting(){
+        if (this.checkOpen()){
+            return
+        }
+        this.openDlg(this.settingDlg)
+    }
+    closeSettingDlg(){
+        this.hideDlg(this.settingDlg)
+    }
+
     rand(min:number, max:number){
         let range = max - min + 1
         let value = min + Math.floor(Math.random() * range)
@@ -764,7 +983,7 @@ export class GameManager extends Component {
         this._ticketNum += info.ticket
         this.updateHealth(-cost)
         let desc = `挑战完成，获得<color=red>鸿蒙符</color>*${info.ticket}`
-        this.closeConfirmDlg()
+      
         this.showResult(desc)
     }
     confirmMiJing(){
@@ -793,7 +1012,7 @@ export class GameManager extends Component {
         itemDesc += valueDesc
         
         this.updateHealth(-MIJING[this._mijingType].cost)
-        this.closeConfirmDlg()
+      
         this.showResult(itemDesc)
     }
 
@@ -814,12 +1033,13 @@ export class GameManager extends Component {
             this.updateHealth(-this._biguanDay)
             this.updateMoney(-needCost, false)
             this.showMsg(desc)
-            this.closeConfirmDlg()
+    
         }
     }
 
     clickConfirmDlg(){
         this._func()
+        this.closeConfirmDlg()
     }
 
     showConfirmDlg(desc, func){  
@@ -901,6 +1121,12 @@ export class GameManager extends Component {
     }
 
     updateHealth(num:number){
+        if (num>0){
+            if (this._treasureTb.has(4)){
+                this._health+= Math.ceil(num * 1.5)
+            }
+            
+        }
         this._health += num
         if (this._health <= 0){
             let desc = "游戏结束"
@@ -990,82 +1216,122 @@ export class GameManager extends Component {
             this._itemTb.set(id, cnt)
         }
     }
+    RealUseItem(num:number){
+        let itemInfo = ITEM[this._chooseItemId]
+        if (itemInfo.kind == ITEM_KIND.GONG_FA){
+            if (this._gongfa == this._chooseItemId){
+                this.showMsg("已装备同功法")
+                return
+            }
+            else{
+                this.updateGongFa(itemInfo)
+                this.showMsg("装备成功")
+            }
+            
+        }
+
+        if (itemInfo.kind == ITEM_KIND.WEAPON){
+            if (this._weapon == this._chooseItemId){
+                this.showMsg("已装备同武器")
+                return
+            }
+            else{
+                this.updateWeapon(itemInfo)
+                this.showMsg("装备成功")
+            }
+            
+        }
+
+        if (itemInfo.kind == ITEM_KIND.CLOTHE){
+            if (this._armor == this._chooseItemId){
+                this.showMsg("已装备同防具")
+                return
+            }
+            else{
+                this.updateClothe(itemInfo)
+                this.showMsg("装备成功")
+            }
+            
+        }
+
+        if (itemInfo.kind == ITEM_KIND.DRUG){
+            let addRate = 0
+            let value = itemInfo.value
+            let desc = `经验增加${itemInfo.value * num}`
+            if (this._treasureTb.has(1)){
+                addRate +=  0.5
+            }
+            if (this._treasureTb.has(6)){
+                addRate +=  0.5
+            }
+            if (addRate > 0){
+                let addValue = Math.ceil(value * addRate * num)
+                value += addValue
+                desc +=  `(额外加成${addValue})`
+            }
+            this.doAddExp(value)
+            this.showMsg(desc)
+        }
+
+        let haveNum = this._itemTb.get(this._chooseItemId)
+        let leftNum = haveNum - num
+        if (leftNum <= 0){
+            this._itemTb.delete(this._chooseItemId)
+            this._chooseItemId = 0
+            this.clearChooseItemDesc()
+        }
+        else{
+            this._itemTb.set(this._chooseItemId, leftNum)
+        }
+        this.updateBag()
+    }
+
+    showUseItemDlg(item:object,num:number){
+        this.openDlg(this.useDlg)
+        this.useDlg.getChildByName("Bg").getChildByName("ItemName").getComponent(RichText).string = `${item.name}`
+        this.useDlg.getChildByName("Bg").getChildByName("haveLabel").getComponent(Label).string = `已拥有:${num}`
+        this._ownNum = num
+        this.updateUseNum(this._ownNum)
+    }
+    confirmUse(){
+        this.RealUseItem(this._sellNum)
+        this.closeUseDlg()
+    }
+    closeUseDlg(){
+        this.hideDlg(this.useDlg)
+    }
+    onUseSliderChange(){
+        let value = this.useDlg.getChildByName("Bg").getChildByName("Slider").getComponent(Slider).progress 
+        value = Math.floor(value * this._ownNum)
+        this.updateUseNum(value)
+         
+    }
+    updateUseNum(num:number){
+        this._sellNum = num
+        this.useDlg.getChildByName("Bg").getChildByName("sellLabel").getComponent(Label).string = `${num}`
+        this.useDlg.getChildByName("Bg").getChildByName("Slider").getComponent(Slider).progress = num / this._ownNum
+        this.useDlg.getChildByName("Bg").getChildByName("Slider").getComponent(ProgressBar).progress = num / this._ownNum
+    }
 
     useItem(){
         if (this._chooseItemId != 0){
-            console.info("useItem",this._chooseItemId)
-            let itemInfo = ITEM[this._chooseItemId]
-            if (itemInfo.kind == ITEM_KIND.GONG_FA){
-                if (this._gongfa == this._chooseItemId){
-                    this.showMsg("已装备同功法")
-                    return
-                }
-                else{
-                    this.updateGongFa(itemInfo)
-                    this.showMsg("装备成功")
-                }
-                
-            }
-
-            if (itemInfo.kind == ITEM_KIND.WEAPON){
-                if (this._weapon == this._chooseItemId){
-                    this.showMsg("已装备同武器")
-                    return
-                }
-                else{
-                    this.updateWeapon(itemInfo)
-                    this.showMsg("装备成功")
-                }
-                
-            }
-
-            if (itemInfo.kind == ITEM_KIND.CLOTHE){
-                if (this._armor == this._chooseItemId){
-                    this.showMsg("已装备同防具")
-                    return
-                }
-                else{
-                    this.updateClothe(itemInfo)
-                    this.showMsg("装备成功")
-                }
-                
-            }
-
-            if (itemInfo.kind == ITEM_KIND.DRUG){
-                let addRate = 0
-                let value = itemInfo.value
-                let desc = `经验增加${itemInfo.value}`
-                if (this._treasureTb.has(1)){
-                    addRate +=  0.5
-                }
-                if (this._treasureTb.has(6)){
-                    addRate +=  0.5
-                }
-                if (addRate > 0){
-                    let addValue = Math.ceil(value * addRate)
-                    value += addValue
-                    desc +=  `(额外加成${addValue})`
-                }
-                this.doAddExp(value)
-                this.showMsg(desc)
-            }
-
             let num = this._itemTb.get(this._chooseItemId)
-            if (num == 1){
-                this._itemTb.delete(this._chooseItemId)
-                this._chooseItemId = 0
+            let itemInfo = ITEM[this._chooseItemId]
+            if(num == 1 || itemInfo.kind!=ITEM_KIND.DRUG){
+                this.RealUseItem(1)
             }
             else{
-                this._itemTb.set(this._chooseItemId, num - 1)
+                this.showUseItemDlg(itemInfo, num)
             }
-            this.updateBag()
+                
         }
         else{
             this.showMsg("未选择物品")
         }
         
-
     }
+
+
     sellItem(){
         if(this._chooseItemId!=0){
             let num = this._itemTb.get(this._chooseItemId)
@@ -1075,6 +1341,7 @@ export class GameManager extends Component {
                 this.updateMoney(itemInfo.price, false)
                 this.updateBag()
                 this._chooseItemId = 0
+                this.clearChooseItemDesc()
             }
             else{
                 this.showSellDlg(itemInfo, num)
@@ -1090,6 +1357,7 @@ export class GameManager extends Component {
         this.openDlg(this.sellDlg)
         this.sellDlg.getChildByName("Bg").getChildByName("ItemName").getComponent(RichText).string = `${item.name}`
         this.sellDlg.getChildByName("Bg").getChildByName("haveLabel").getComponent(Label).string = `已拥有:${num}`
+        this.sellDlg.getChildByName("Bg").getChildByName("priceLabel").getComponent(Label).string = `${item.price}`
         this._ownNum = num
         this.updateSellNum(this._ownNum)
     }
@@ -1123,6 +1391,7 @@ export class GameManager extends Component {
         if (this._sellNum == this._ownNum){
             this._itemTb.delete(this._chooseItemId)
             this._chooseItemId = 0
+            this.clearChooseItemDesc()
         }
         else{
             this._itemTb.set(this._chooseItemId, this._ownNum - this._sellNum)
