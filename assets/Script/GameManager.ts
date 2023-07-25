@@ -1,4 +1,4 @@
-import { _decorator, sys, Component, Node, random,Animation, Label, RichText, find, ProgressBar, tween, UITransform, Prefab, Button,instantiate, ScrollView,EventHandler, Sprite, loader, resources, assert, SpriteFrame, Slider, math, dragonBones, macro, Vec2 } from 'cc';
+import { _decorator, sys, Component, Node, random,Animation, Label, RichText, find, ProgressBar, tween, UITransform, Prefab, Button,instantiate, ScrollView,EventHandler, Sprite, loader, resources, assert, SpriteFrame, Slider, math, dragonBones, macro, Vec2, CCClass, AudioSource } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { ITEM } from './Item';
@@ -14,6 +14,7 @@ const COLOR_LEVEL = {
     [4]: "#efb134",
     [5]: "red",
 }
+
 
 const CHANCE_RANGE = {
     [0]:{
@@ -308,17 +309,17 @@ const MIJING = {
 
 const BOSS = {
     [1]: {
-        cost:5,
+        cost:2,
         dps:20000,
         ticket:1,
     },
     [2]: {
-        cost:5,
+        cost:2,
         dps:90000,
         ticket:2,
     },
     [3]: {
-        cost:5,
+        cost:2,
         dps:500000,
         ticket:5,
     },
@@ -348,7 +349,7 @@ const GUIDE = {
         y:50,
         btnX:-80,
         btnY:-80,
-        des:`点击奇遇可触发不同游历事件，获取经验和灵石`,
+        des:`点击奇遇可触发不同游历事件，获取经验和灵石，每次消耗1道年`,
     },
     [2]:{
         guideNode:'BiGuan',
@@ -372,7 +373,7 @@ const GUIDE = {
         y:0,
         btnX:-280,
         btnY:0,
-        des:`击败妖兽可获得鸿蒙符，战力超过一定条件才能进行跳转`,
+        des:`击败妖兽可获得鸿蒙符，战力超过一定条件才能进行挑战`,
     },
     [5]:{
         guideNode:'Lottery',
@@ -456,7 +457,7 @@ export class GameManager extends Component {
 
     checkShowGuide(){
         let hasGuide = sys.localStorage.getItem("hasGuide")
-        if (hasGuide != `1`){
+        if (Number(hasGuide) != 1){
             this._guideId = 1
             this.showGuide()
         }
@@ -509,8 +510,8 @@ export class GameManager extends Component {
             treasureTb:this._treasureTb ,
         }
         const jsonStr = JSON.stringify(userData);
+       
         sys.localStorage.setItem("userData",jsonStr);
-        console.info(userData)
     }
 
 
@@ -520,6 +521,7 @@ export class GameManager extends Component {
         if(jsonStr){
             userData = JSON.parse(jsonStr) as UserData;;
         }
+      
         if (userData){
             this._level = userData.level; //境界
             this._weapon = userData.weapon; //法宝
@@ -594,27 +596,27 @@ export class GameManager extends Component {
 
     updateEquipInfo(){
         if (this._gongfa != 0){
-            let armorInfo = ITEM[this._gongfa] 
+            let gongfaInfo = ITEM[this._gongfa] 
+            let colorDesc = COLOR_LEVEL[gongfaInfo.level]
+            find("Canvas/GongFa/desc").getComponent(RichText).string = `<color=${colorDesc}>[${gongfaInfo.name}]</color>`
+        }
+        else{
+            find("Canvas/GongFa/desc").getComponent(RichText).string = ``
+        }
+        
+        if (this._armor != 0){
+            let armorInfo = ITEM[this._armor] 
             let colorDesc = COLOR_LEVEL[armorInfo.level]
             find("Canvas/FangJu/desc").getComponent(RichText).string = `<color=${colorDesc}>[${armorInfo.name}]</color>`
         }
         else{
             find("Canvas/FangJu/desc").getComponent(RichText).string = ``
         }
-        
-        if (this._armor != 0){
-            let armorInfo = ITEM[this._armor] 
-            let colorDesc = COLOR_LEVEL[armorInfo.level]
-            find("Canvas/GongFa/desc").getComponent(RichText).string = `<color=${colorDesc}>[${armorInfo.name}]</color>`
-        }
-        else{
-            find("Canvas/GongFa/desc").getComponent(RichText).string = ``
-        }
 
         if (this._weapon != 0){
-            let armorInfo = ITEM[this._weapon] 
-            let colorDesc = COLOR_LEVEL[armorInfo.level]
-            find("Canvas/FaBao/desc").getComponent(RichText).string = `<color=${colorDesc}>[${armorInfo.name}]</color>`
+            let weaponInfo = ITEM[this._weapon] 
+            let colorDesc = COLOR_LEVEL[weaponInfo.level]
+            find("Canvas/FaBao/desc").getComponent(RichText).string = `<color=${colorDesc}>[${weaponInfo.name}]</color>`
         }
         else{
             find("Canvas/FaBao/desc").getComponent(RichText).string = ``
@@ -641,11 +643,17 @@ export class GameManager extends Component {
 
 
     clickBiGuan(){
+        if (this.checkOpen()){
+            return
+        }
         this.openDlg(this.biguanDlg)
        
     }
 
     clickBag(){
+        if (this.checkOpen()){
+            return
+        }
         this.openDlg(this.bagDlg)
         this.updateBag()
         
@@ -752,7 +760,7 @@ export class GameManager extends Component {
     showMsg(desc:string){
         let msg = find("Canvas/AllDlg/Msg")
         msg.getComponent(Animation).play("msg")
-        msg.getChildByName("RichText").getComponent(RichText).string = desc
+        msg.getChildByName("RichText").getComponent(RichText).string = `${desc}`
     }
     showTips(type:number){
         let msg = find("Canvas/AllDlg/Tips")
@@ -889,7 +897,6 @@ export class GameManager extends Component {
 
     rewardRandom(rewardList:any){
         let randValue = this.rand(1,100)
-        console.info("rand", randValue)
         let randIndex = 0
         for (let index in rewardList){
             if (randValue <= rewardList[index] ){
@@ -900,7 +907,6 @@ export class GameManager extends Component {
                 randValue -= rewardList[index]
             }
         }
-        console.info("randIndex", randIndex)
         return randIndex
     }
 
@@ -924,7 +930,6 @@ export class GameManager extends Component {
             if (type == 0){//修为丹
                 let level = Math.max(1,Math.ceil(this._level / 3))
                 let itemId = 40000 + level * 1000 + kindLevel * 100
-                console.info(itemId)
                 let itemCnt = 10
                 if (kindLevel == 2){
                     itemCnt = 5
@@ -938,7 +943,7 @@ export class GameManager extends Component {
             else if (type == 1){//功法
                 let level = Math.max(1,Math.ceil(this._level / 3))
                 let itemId = 30000 + level * 1000 + kindLevel * 100
-                console.info(itemId)
+               
                 this.doAddItem(itemId, cnt)
                 rewardDesc += this.getRewardDesc(itemId, cnt)
             }
@@ -948,7 +953,7 @@ export class GameManager extends Component {
                     rewardDesc += `[<color=red>${TREASURE[rand]}</color>]，由于重复获得，转化为[<color=#efb134>上品修为丹</color>]*10`
                     let level = Math.max(1,Math.ceil(this._level / 3))
                     let itemId = 40000 + level * 1000 + 300
-                    console.info(itemId)
+                   
                     this.doAddItem(itemId,10)
                 }
                 else{
@@ -1005,7 +1010,7 @@ export class GameManager extends Component {
         let type = this.rand(1,3)
         let randLevel = this.rewardRandom(reward.rate) + 1
         let itemId = type * 10000 + (this._mijingType)* 1000 + randLevel*100
-        console.info(itemId)
+        
         this.doAddItem(itemId, 1)
         let colorDesc = COLOR_LEVEL[ITEM[itemId].level]
         let valueDesc = `[<color=${colorDesc}>${ITEM[itemId].name}</color>]`
@@ -1256,8 +1261,8 @@ export class GameManager extends Component {
 
         if (itemInfo.kind == ITEM_KIND.DRUG){
             let addRate = 0
-            let value = itemInfo.value
-            let desc = `经验增加${itemInfo.value * num}`
+            let value = itemInfo.value * num
+            let desc = `经验增加${value}`
             if (this._treasureTb.has(1)){
                 addRate +=  0.5
             }
@@ -1265,7 +1270,7 @@ export class GameManager extends Component {
                 addRate +=  0.5
             }
             if (addRate > 0){
-                let addValue = Math.ceil(value * addRate * num)
+                let addValue = Math.ceil(value * addRate)
                 value += addValue
                 desc +=  `(额外加成${addValue})`
             }
